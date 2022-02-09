@@ -1,17 +1,17 @@
 package Week_01;
 
-public class task_1 {
+public class task_2 {
 
-
-    public static void printAlphabet() {
+    // вывод в консоль латинского алфафита задом наперед
+    public static void printReverseAlphabet() {
         char[] alphabet = new char[26];
-        for (int i = 0; i < alphabet.length; i++) {
-            alphabet[i] = (char) (i + 65);
+        for (int i = alphabet.length - 1; i >= 0; i--) {
+            alphabet[i] = (char) (i + 65); // генерируем алфавит по коду ASCII
             System.out.print(alphabet[i]);
         }
     }
 
     public static void main(String[] args) {
-        printAlphabet();
+        printReverseAlphabet();
     }
 }

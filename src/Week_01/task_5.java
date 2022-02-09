@@ -2,22 +2,22 @@ package Week_01;
 
 import java.util.Arrays;
 
-public class task_4 {
-    // возврат копии массива test_array, в котором нет вхождений элемента elem
-    public static int[] removeElement(int[] test_array, int elem) {
-        int count = 0;
-        for (int i = 0; i < test_array.length; i++) {
-            if (test_array[i] != elem)
-                test_array[i - count] = test_array[i];
-            else {
-                count++; // количество вхождений elem
+public class task_5 {
+
+    // сложение матриц
+    public static int[][] matrixAdd(int[][] matrix1, int[][] matrix2) {
+        int[][] result_matrix = Arrays.copyOf(matrix1, matrix1.length); // создаем матрицу для результата сложения
+        for (int i = 0; i < matrix1.length; i++) {          // количество строк должно быть одинаковым
+            for (int j = 0; j < matrix1[i].length; j++) {   // количество столбцов должно быть одинаковым
+                result_matrix[i][j] = matrix1[i][j] + matrix2[i][j];
             }
         }
-        return Arrays.copyOf(test_array, test_array.length - count);
+        return result_matrix;
     }
 
     public static void main(String[] args) {
-        int[] test_array = {1, 2, 3, 4, 5, 6, 7, 8};
-        System.out.println(Arrays.toString(removeElement(test_array, 3)));
+        int[][] matrix1 = {{1, 2, 3}, {1, 2, 3}, {1, 2, 3}};
+        int[][] matrix2 = {{3, 2, 1}, {3, 2, 1}, {3, 2, 1}};
+        System.out.println(Arrays.deepToString(matrixAdd(matrix1, matrix2)));
     }
 }

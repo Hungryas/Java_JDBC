@@ -2,19 +2,23 @@ package Week_01;
 
 import java.util.Arrays;
 
-public class task_3 {
+public class task_4 {
 
-    // возврат массива из n элементов с рандомными значениями
-    public static double[] createRandomArray(int n) {
-        double[] array = new double[n];
-        for (int i = 0; i < n; i++) array[i] = Math.random();
-        return array;
+    // возврат копии массива test_array, в котором нет вхождений элемента elem
+    public static int[] removeElement(int[] test_array, int elem) {
+        int count = 0;
+        for (int i = 0; i < test_array.length; i++) {
+            if (test_array[i] != elem)
+                test_array[i - count] = test_array[i];
+            else {
+                count++; // количество вхождений elem
+            }
+        }
+        return Arrays.copyOf(test_array, test_array.length - count);
     }
 
     public static void main(String[] args) {
-        int n = (int) (10 * Math.abs(Math.random()));
-        System.out.println(n);
-        double[] arr = createRandomArray(n);
-        System.out.println(Arrays.toString(arr));
+        int[] test_array = {1, 2, 3, 4, 5, 6, 7, 8};
+        System.out.println(Arrays.toString(removeElement(test_array, 3)));
     }
 }
