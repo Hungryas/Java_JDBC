@@ -4,13 +4,13 @@ public class task_2 {
 
     //  перевод 1й буквы каждого слова в строке в заглавную
     public static String capitalizeEachWord(String sentence) {
-        String[] words_array = sentence.split(" ");
-        StringBuilder result_string = new StringBuilder();
-        for (String s : words_array) {
-            String replaced_letter = s.substring(0, 1);
-            result_string.append(" ").append(replaced_letter.toUpperCase()).append(s.substring(1));
+        String[] wordsArray = sentence.split(" ");
+        StringBuilder resultString = new StringBuilder();
+        for (String s : wordsArray) {
+            String replacedLetter = s.substring(0, 1);
+            resultString.append(" ").append(replacedLetter.toUpperCase()).append(s.substring(1));
         }
-        return result_string.toString().trim();
+        return resultString.toString().trim();
     }
 
     public static void main(String[] args) {
