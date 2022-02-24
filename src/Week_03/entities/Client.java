@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Client extends AbstractUser {
     private Boolean banned = false;
-    List<Book> books = new ArrayList<>();
+    private List<Book> books = new ArrayList<>();
 
     public Client(String firstName, String lastName, String middleName, String phone) {
         super(firstName, lastName, middleName, phone);
