@@ -11,20 +11,12 @@ public class Client extends AbstractUser {
         super(firstName, lastName, middleName, phone);
     }
 
-    public void takeBooks(List<Book> books) {
-        this.books.addAll(books);
-    }
-
-    public void returnBooks(List<Book> books) {
-        this.books.removeAll(books);
-    }
-
     public void setBanned(Boolean banned) {
         this.banned = banned;
     }
 
-    public String getBooks() {
-        return books.toString();
+    public List<Book> getBooks() {
+        return books;
     }
 
     public Boolean getBanned() {

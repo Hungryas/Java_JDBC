@@ -9,11 +9,11 @@ import java.util.List;
 public class ClientServiceImpl implements ClientService {
     @Override
     public void takeBooks(Client client, List<Book> books) {
-        client.takeBooks(books);
+        client.getBooks().addAll(books);
     }
 
     @Override
     public void returnBooks(Client client, List<Book> books) {
-        client.returnBooks(books);
+        client.getBooks().removeAll(books);
     }
 }
