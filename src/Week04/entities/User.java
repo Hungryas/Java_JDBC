@@ -1,24 +1,23 @@
 package Week04.entities;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class User {
-    private final String id;
+    private final String id = UUID.randomUUID().toString();
     private String firstName;
     private String lastName;
     private String middleName;
     private String phone;
     private String email;
-    private UserStatus status;
+    private UserStatus status = UserStatus.ACTIVE;
 
     public User(String firstName, String lastName, String middleName, String phone, String email) {
-        this.id = UUID.randomUUID().toString();
         this.firstName = firstName;
         this.lastName = lastName;
         this.middleName = middleName;
         this.phone = phone;
         this.email = email;
-        this.status = UserStatus.ACTIVE;
     }
 
     public String getId() {
@@ -82,5 +81,24 @@ public class User {
                 phone,
                 email,
                 status);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) &&
+                Objects.equals(firstName, user.firstName) &&
+                Objects.equals(lastName, user.lastName) &&
+                Objects.equals(middleName, user.middleName) &&
+                Objects.equals(phone, user.phone) &&
+                Objects.equals(email, user.email) &&
+                status == user.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, middleName, phone, email, status);
     }
 }

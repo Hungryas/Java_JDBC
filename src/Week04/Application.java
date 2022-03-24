@@ -13,7 +13,7 @@ public class Application {
         UserRepository userRepository = new UserRepositoryImpl();
         UserService userService = new UserServiceImpl(userRepository);
 
-        // сохраняет спискок пользователей и возвращает его
+        // сохраняет список пользователей и возвращает его
         userRepository.saveAll(Arrays.asList(new User("Иван",
                 "Иванов",
                 "Иванович",
@@ -32,18 +32,18 @@ public class Application {
         // возвращает список всех пользователей
         System.out.println(userRepository.getAll().toString());
         // возвращает пользователя по идентификатору или null
-        System.out.println(userRepository.getBy(userRepository.getListID().get(0)));
+        System.out.println(userRepository.getBy(userRepository.getAll().get(0).getId()));
         // поиск по пользователям
         System.out.println(userService.getUsers("+7(999)999-99-91"));
         // выставляет найденным пользователям статус DELETED
         userService.deleteUsers(userRepository.getAll().subList(1, 3));
         // обновить поля и вернуть обновленного пользователя, если статус ACTIVATED
-        userService.updateUser(userRepository.getListID().get(0), "Ivan",
+        userService.updateUser(userRepository.getAll().get(0).getId(), "Ivan",
                 "Ivanov",
                 "Ivanovich",
                 "+7(999)999-99-90",
                 "ivanov@mail.com");
-        userService.updateUser(userRepository.getListID().get(1), "Petr",
+        userService.updateUser(userRepository.getAll().get(1).getId(), "Petr",
                 "Petrov",
                 "Petrovich",
                 "+7(999)999-99-91",

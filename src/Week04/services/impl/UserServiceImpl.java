@@ -16,15 +16,17 @@ public class UserServiceImpl implements UserService {
     }
 
     // поиск по пользователям
+    @Override
     public List<User> getUsers(String request) {
         List<User> resultList = new ArrayList<>();
-        List<String> userData = List.of(request.split(" "));
         // Определяем, на входе ФИО или нет
-        if (userData.size() > 1) {
-            for (User user : userRepository.getAll())
-                if (user.getStatus() == UserStatus.ACTIVE && user.getFirstName().equals(userData.get(1)) && user.getLastName().equals(userData.get(0)) && user.getMiddleName().equals(userData.get(2))) {
+        if (request.split(" ", 2).length == 3) {
+            for (User user : userRepository.getAll()) {
+                var userName = String.join(" ", user.getLastName(), user.getFirstName(), user.getMiddleName());
+                if (user.getStatus() == UserStatus.ACTIVE && userName.equals(request)) {
                     resultList.add(user);
                 }
+            }
         } else {
             for (User user : userRepository.getAll())
                 if (user.getStatus() == UserStatus.ACTIVE && (user.getPhone().equals(request)) || user.getEmail().equals(request)) {
@@ -35,6 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     // выставляет найденным пользователям статус DELETED
+    @Override
     public void deleteUsers(List<User> userList) {
         List<User> repository = userRepository.getAll();
         for (User user : userList)
@@ -42,23 +45,25 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAll(userList);
     }
 
-    // обновить поля и вернуть обновленного пользователя, если статус ACTIVATED
+    // обновить поля и вернуть обновленного пользователя, если статус ACTIVE
+    @Override
     public User updateUser(String id, String firstName, String lastName, String middleName, String phone, String email) {
-        User user = userRepository.getAll().get(userRepository.getListID().indexOf(id));
-        if (user.getStatus() == UserStatus.ACTIVE) {
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            user.setMiddleName(middleName);
-            user.setPhone(phone);
-            user.setEmail(email);
-            return user;
-        } else {
-            System.out.printf("Can't update user with id %s, because it's status is DELETED", id);
-            return null;
+        for (User user : userRepository.getAll()) {
+            if (user.getId().equals(id) && user.getStatus() == UserStatus.ACTIVE) {
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
+                user.setMiddleName(middleName);
+                user.setPhone(phone);
+                user.setEmail(email);
+                return user;
+            }
         }
+        System.out.printf("Can't update user with id %s, because it's status is DELETED\n", id);
+        return null;
     }
 
     // создает нового пользователя посредством вызова save у userRepository
+    @Override
     public User createUser(String firstName, String lastName, String middleName, String phone, String email) {
         return userRepository.save(new User(firstName, lastName, middleName, phone, email));
     }
