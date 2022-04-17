@@ -9,20 +9,14 @@ import Week05.service.exceptions.BookingNotFoundException;
 import Week05.service.exceptions.RequiredFieldMissedException;
 import Week05.service.exceptions.RoomNotFoundException;
 
-import java.util.List;
-import java.util.Set;
-
 public record BookingServiceImpl(BookingRepository bookingRepository,
                                  RoomService roomService) implements BookingService {
 
     // получить бронирование по идентификатору, если не найдено -- выкинуть BookingNotFoundException
     @Override
-    public Booking getBy(String id)
-            throws BookingNotFoundException {
-        for (Booking booking : bookingRepository.getAll()) {
-            if (booking.getId().equals(id)) return booking;
-        }
-        throw new BookingNotFoundException();
+    public Booking getBy(String id) {
+        return bookingRepository.getAll().stream().filter(booking -> booking.getId().equals(id)).findAny().
+                orElseThrow(BookingNotFoundException::new);
     }
 
     // здесь нужно с помощью bookingRepository создать бронирование
@@ -31,16 +25,12 @@ public record BookingServiceImpl(BookingRepository bookingRepository,
     // обновить комнату, переданную в запросе на создание бронирования, добавив это самое
     // бронирование в поле bookings комнаты
     @Override
-    public Booking createBooking(Booking booking)
-            throws RequiredFieldMissedException, RoomNotFoundException {
-        if (booking.getCheckIn() == null) throw new RequiredFieldMissedException("Field \"CheckIn Date\" is missed");
-        if (booking.getCheckOut() == null) throw new RequiredFieldMissedException("Field \"CheckOut Date\" is missed");
-        if (booking.getGuest() == null) throw new RequiredFieldMissedException("Field \"Guest\" is missed");
-        if (booking.getRoom() == null) throw new RequiredFieldMissedException("Field \"Room\" is missed");
+    public Booking createBooking(Booking booking) throws RequiredFieldMissedException {
+        validateBooking(booking);
         bookingRepository.save(booking);
-        if (booking.getRoom() == null) throw new RoomNotFoundException();
         booking.getRoom().addBooking(booking);
-        System.out.printf("Booking with ID %s is created for Room %s.\n", booking.getId(), booking.getRoom().getRoomNumber());
+        System.out.printf("Booking with ID %s is created for Room %s.\n",
+                booking.getId(), booking.getRoom().getRoomNumber());
         return booking;
     }
 
@@ -51,41 +41,36 @@ public record BookingServiceImpl(BookingRepository bookingRepository,
     // иначе выкинуть RoomNotFoundException
     // обновить данные комнат, удалив бронирование из прежней комнаты и поместив его в новую
     @Override
-    public Booking updateBooking(String id, Booking booking)
-            throws RequiredFieldMissedException, BookingNotFoundException, RoomNotFoundException {
+    public Booking updateBooking(String id, Booking booking) throws RequiredFieldMissedException {
+        validateBooking(booking);
         if (bookingRepository.getBy(id) == null) throw new BookingNotFoundException();
-        if (booking.getId() == null) throw new RequiredFieldMissedException("Field \"Booking ID\" is missed");
-        Room newRoom = bookingRepository.getBy(id).getRoom();
-        if (booking.getRoom() != null && roomService.getBy(newRoom.getId()) == null)
-            throw new RoomNotFoundException();
         // удаляем бронирование из комнаты
-        search:
-        for (List<Room> typeList : roomService.getRoomsGroupByType().values()) {
-            for (Room room : typeList) {
-                if (!room.getBookings().isEmpty()) {
-                    for (Booking in : room.getBookings()) {
-                        if (in.equals(booking)) {
-
-                            Set<Booking> newBookings = room.getBookings();
-                            newBookings.remove(booking);
-                            room.setBookings(newBookings);
-                            break search;
-                        }
-                    }
-                }
-            }
-        }
+        Room oldRoom = roomService.getRoomsGroupByType().values().stream()
+                .map(list -> list.get(0)).filter(room -> room.getBookings().contains(booking))
+                .findFirst().orElseThrow(BookingNotFoundException::new);
+        oldRoom.removeBooking(booking);
         // добавляем бронирование в другую
+        Room newRoom = bookingRepository.getBy(id).getRoom();
         newRoom.addBooking(booking);
         System.out.printf("Booking with ID %s is moved to Room %s.\n", booking.getId(), newRoom.getRoomNumber());
         return booking;
     }
 
-    // удалить бронирование с помощью bookingRepository из комнаты в которой оно было
+    // удалить бронирование с помощью bookingRepository из комнаты, в которой оно было
     @Override
     public void deleteBooking(Booking booking) {
         String bookingId = booking.getId();
         bookingRepository.getBy(bookingId).getRoom().removeBooking(booking);
         bookingRepository.delete(booking);
+    }
+
+    // проверка полей и существования комнаты
+    private void validateBooking(Booking booking) throws RequiredFieldMissedException {
+        if (booking.getId() == null) throw new RequiredFieldMissedException("Field \"Booking ID\" is missed");
+        if (booking.getRoom() == null) throw new RequiredFieldMissedException("Field \"Room\" is missed");
+        if (booking.getGuest() == null) throw new RequiredFieldMissedException("Field \"Guest\" is missed");
+        if (booking.getCheckIn() == null) throw new RequiredFieldMissedException("Field \"CheckIn Date\" is missed");
+        if (booking.getCheckOut() == null) throw new RequiredFieldMissedException("Field \"CheckOut Date\" is missed");
+        if (roomService.getBy(booking.getRoom().getId()) == null) throw new RoomNotFoundException();
     }
 }

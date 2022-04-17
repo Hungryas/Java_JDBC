@@ -16,7 +16,7 @@ public interface BookingService {
      * @throws BookingNotFoundException если бронирование с таким id не найдено
      * @return бронирование
      */
-    Booking getBy(String id) throws BookingNotFoundException;
+    Booking getBy(String id);
 
     /**
      * Создать бронирование.
@@ -24,7 +24,7 @@ public interface BookingService {
      * @param booking бронирование
      * @return созданное бронирование с присвоенным идентификатором
      */
-    Booking createBooking(Booking booking) throws RequiredFieldMissedException, RoomNotFoundException;
+    Booking createBooking(Booking booking) throws RequiredFieldMissedException;
 
     /**
      * Обновить бронирование.
@@ -33,7 +33,7 @@ public interface BookingService {
      * @throws BookingNotFoundException если бронирование с таким id не найдено
      * @return обновленное бронирование
      */
-    Booking updateBooking(String id, Booking booking) throws RequiredFieldMissedException, BookingNotFoundException, RoomNotFoundException;
+    Booking updateBooking(String id, Booking booking) throws RequiredFieldMissedException;
 
     /**
      * Удалить бронирование.

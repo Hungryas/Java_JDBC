@@ -19,7 +19,7 @@ public interface RoomService {
      * @throws RoomNotFoundException если комната с таким id не найдена
      * @return комната
      */
-    Room getBy(String id) throws RoomNotFoundException;
+    Room getBy(String id);
 
     /**
      * Создать комнату.
@@ -37,7 +37,7 @@ public interface RoomService {
      * @throws RoomNotFoundException если комната с таким id не найдена
      * @return обновленная комната
      */
-    Room updateRoom(String id, Room room) throws RoomNotFoundException;
+    Room updateRoom(String id, Room room);
 
     /**
      * Удалить комнату.

@@ -17,11 +17,9 @@ public record RoomServiceImpl(RoomRepository roomRepository) implements RoomServ
     // нужно с помощью roomRepository вернуть комнату по идентификатору, в случае
     // если комната не найдена -- выбросить RoomNotFoundException
     @Override
-    public Room getBy(String id) throws RoomNotFoundException {
-        for (Room room : roomRepository.getAll()) {
-            if (room.getId().equals(id)) return room;
-        }
-        throw new RoomNotFoundException();
+    public Room getBy(String id) {
+        return roomRepository.getAll().stream().filter(room -> room.getId().equals(id)).findAny().
+                orElseThrow(RoomNotFoundException::new);
     }
 
     // здесь нужно с помощью roomRepository создать комнату и присвоить ей id
@@ -29,12 +27,8 @@ public record RoomServiceImpl(RoomRepository roomRepository) implements RoomServ
     // иначе выкинуть исключение RequiredFieldMissedException
     // поле bookings не заполнять
     @Override
-    public Room createRoom(Room room)
-            throws RequiredFieldMissedException {
-        if (room.getRoomNumber() == null) throw new RequiredFieldMissedException("Field \"Number\" is missed");
-        if (room.getFloor() == null) throw new RequiredFieldMissedException("Field \"Floor\" is missed");
-        if (room.getType() == null) throw new RequiredFieldMissedException("Field \"Type\" is missed");
-        if (room.getPrice() == null) throw new RequiredFieldMissedException("Field \"Price\" is missed");
+    public Room createRoom(Room room) throws RequiredFieldMissedException {
+        validateRoom(room);
         roomRepository.save(room);
         return room;
     }
@@ -42,8 +36,7 @@ public record RoomServiceImpl(RoomRepository roomRepository) implements RoomServ
     // здесь нужно проверить, что комната с таким id существует
     // обновить данные комнаты с помощью roomRepository
     @Override
-    public Room updateRoom(String id, Room room)
-            throws RoomNotFoundException {
+    public Room updateRoom(String id, Room room) {
         if (roomRepository.getBy(id) == null) throw new RoomNotFoundException();
         for (Room existRoom : roomRepository.getAll()) {
             if (existRoom.getId().equals(id)) {
@@ -80,5 +73,13 @@ public record RoomServiceImpl(RoomRepository roomRepository) implements RoomServ
             }
         }
         return roomsGroupByType;
+    }
+
+    // проверка заполнения полей комнаты
+    private void validateRoom(Room room) throws RequiredFieldMissedException {
+        if (room.getRoomNumber() == null) throw new RequiredFieldMissedException("Field \"Number\" is missed");
+        if (room.getFloor() == null) throw new RequiredFieldMissedException("Field \"Floor\" is missed");
+        if (room.getType() == null) throw new RequiredFieldMissedException("Field \"Type\" is missed");
+        if (room.getPrice() == null) throw new RequiredFieldMissedException("Field \"Price\" is missed");
     }
 }
